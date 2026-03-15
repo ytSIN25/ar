@@ -9,6 +9,12 @@ package.name = myarapp
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
 
+# (str) Source code where the main.py live
+source.dir = .
+
+# (str) Application versioning (add this line)
+version = 0.1
+
 # (list) Source code where the main.py live
 source.include_exts = py,png,jpg,kv,atlas,mp4,mp3
 
