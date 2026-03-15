@@ -1,11 +1,13 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.utils import platform
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 import cv2
 import numpy as np
 import pygame
+import os
 
 # 1. Define the UI Layout in Kivy Language (KV)
 KV = '''
@@ -21,18 +23,26 @@ Builder.load_string(KV)
 class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # 1. Request permissions on Android
+        if platform == 'android':
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.CAMERA, Permission.READ_EXTERNAL_STORAGE])
         
         # Hardware/Files
         self.webcamCapture = cv2.VideoCapture(0)
-        self.overlayVideo = cv2.VideoCapture('test.mp4')
+        video_path = os.path.join(os.path.dirname(__file__), 'test.mp4')
+        self.overlayVideo = cv2.VideoCapture(video_path)
         
         # Audio
         pygame.mixer.init()
-        pygame.mixer.music.load('test.mp3') 
+        audio_path = os.path.join(os.path.dirname(__file__), 'test.mp3')
+        pygame.mixer.music.load(audio_path)
         self.isAudioPlaying = False
         
         # Vision Setup
-        self.templateImage = cv2.imread('template.png', cv2.IMREAD_GRAYSCALE)
+        template_path = os.path.join(os.path.dirname(__file__), 'template.png')
+        self.templateImage = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
         self.orbDetector = cv2.ORB_create(nfeatures=5000)
         self.templateKP, self.templateDesc = self.orbDetector.detectAndCompute(self.templateImage, None)
         self.featureMatcher = cv2.BFMatcher()
@@ -45,6 +55,11 @@ class MainLayout(BoxLayout):
         self.smoothingAlpha = 0.2
         
         Clock.schedule_once(self.start_loop)
+
+    def request_android_permissions(self):
+        if platform == 'android':
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.CAMERA, Permission.READ_EXTERNAL_STORAGE])
     
     def start_loop(self, dt):
         Clock.schedule_interval(self.update, 1.0 / 30.0)
