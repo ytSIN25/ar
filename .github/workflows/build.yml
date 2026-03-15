@@ -21,21 +21,24 @@ jobs:
 
       - name: Build with Buildozer
         env:
-          # This tells buildozer to accept licenses automatically
-          BUILDOZER_BUILD_ANDROID_SDK_ACCEPTANCE: "1"
+          # This variable explicitly tells Buildozer to auto-accept licenses
+          ANDROIDSDK_ACCEPT: "1"
         run: |
-          # 1. Create directory for licenses
+          # Ensure the directory exists
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
           
-          # 2. Force acceptance of all licenses. 
-          # The 'yes' command pipes 'y' to every prompt.
-          # We use '|| true' to prevent the pipeline from crashing 
-          # if the licenses are already accepted.
-          yes | sdkmanager --licenses || true
-          
-          # 3. Build the APK
-          buildozer android debug
+          # Force buildozer to run and accept licenses
+          # We use a loop here just in case it prompts for multiple items
+          yes | buildozer android debug
+
+      - name: Force SDK Install
+        run: |
+          # Manually install the build tools and accept the license
+          # This directory structure is where Buildozer expects it
+          export ANDROID_HOME=/home/runner/.buildozer/android/platform/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+          yes | sdkmanager --sdk_root=$ANDROID_HOME "build-tools;34.0.0" "platforms;android-33"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
