@@ -12,12 +12,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          # Use libtinfo6 instead of libtinfo5 for Ubuntu 24.04
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev
-          
-          # Install Buildozer and necessary build tools
-          pip3 install --user --upgrade buildozer
-          pip3 install --user --upgrade cython virtualenv
+          # Added libtool, autoconf, and automake explicitly
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev automake
+          pip3 install --user --upgrade buildozer cython virtualenv
 
       - name: Build with Buildozer
         env:
