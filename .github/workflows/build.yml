@@ -20,15 +20,21 @@ jobs:
           pip3 install --user --upgrade cython virtualenv
 
       - name: Build with Buildozer
+        env:
+          # This tells buildozer to accept licenses automatically
+          BUILDOZER_BUILD_ANDROID_SDK_ACCEPTANCE: "1"
         run: |
-          # Create a directory to hold accepted licenses
+          # 1. Create directory for licenses
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
           
-          # Force acceptance of licenses using yes
+          # 2. Force acceptance of all licenses. 
+          # The 'yes' command pipes 'y' to every prompt.
+          # We use '|| true' to prevent the pipeline from crashing 
+          # if the licenses are already accepted.
           yes | sdkmanager --licenses || true
           
-          # Run the build
+          # 3. Build the APK
           buildozer android debug
 
       - name: Upload artifacts
