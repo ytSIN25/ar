@@ -1,4 +1,8 @@
-name: Build Kivy Android APK
+name: Build with Buildozer
+uses: kusold/buildozer-action@v0.2
+id: buildozer
+with:
+  buildozer_version: stable
 
 on: [push, pull_request]
 
