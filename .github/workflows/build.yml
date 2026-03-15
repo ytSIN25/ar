@@ -21,7 +21,14 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # Build the APK
+          # Create a directory to hold accepted licenses
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          
+          # Force acceptance of licenses using yes
+          yes | sdkmanager --licenses || true
+          
+          # Run the build
           buildozer android debug
 
       - name: Upload artifacts
